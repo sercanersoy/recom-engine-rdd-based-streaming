@@ -4,6 +4,7 @@ scalaVersion := "2.11.12"
 
 val sparkVersion = "2.4.1"
 
+// These dependencies are for local mode.
 //libraryDependencies ++= Seq(
 //  "org.apache.spark" %% "spark-core" % sparkVersion,
 //  "org.apache.spark" %% "spark-sql" % sparkVersion,
@@ -15,6 +16,7 @@ val sparkVersion = "2.4.1"
 //  "org.apache.kafka" % "kafka-clients" % "2.3.0"
 //)
 
+// These dependecies are for cluster mode.
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % sparkVersion % "provided",
   "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",
