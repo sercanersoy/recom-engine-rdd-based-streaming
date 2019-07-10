@@ -10,20 +10,22 @@ import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
 import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
+import scala.util.Try
+
 object Main {
   def main(args: Array[String]): Unit = {
     val spark: SparkSession = SparkSession.builder()
       .appName("recom-engine-streaming")
-//      .master("local")
+      .master("local")
 //      .master("spark://spark-master:7077")
       .getOrCreate()
 
-    //val model : MatrixFactorizationModel = MatrixFactorizationModel.load(spark.sparkContext, "/home/yasin.uygun@trendyol.work/workspace/java/recom-engine-ml/model1")
+    val model : MatrixFactorizationModel = MatrixFactorizationModel.load(spark.sparkContext, "/home/yasin.uygun@trendyol.work/workspace/java/recom-engine-ml/model")
 
     import spark.implicits._
 
     val kafkaParams = Map[String, Object](
-      "bootstrap.servers" -> "kafka1:19092",
+      "bootstrap.servers" -> "localhost:9092",
       "key.deserializer" -> classOf[StringDeserializer],
       "value.deserializer" -> classOf[StringDeserializer],
       "group.id" -> "reviewStream",
@@ -46,7 +48,10 @@ object Main {
       Rating(fields(0).toInt, fields(1).toInt, fields(2).toFloat)
     })
 
-    stream.print
+    stream.map(record => {
+//      Try((record, model.recommendProducts(record.user, 10))).getOrElse((record, null))
+      (record, model.recommendProducts(record.user, 10))
+    }).print
 
     ssc.start()
     ssc.awaitTermination()
